@@ -73,19 +73,19 @@ enum_value_define = """\
 """
 
 class_method_argc_argv = """\
-    {return_type} {method_name}(std::vector<std::string> args) 
-    {{
-        std::vector<char *> c_str;
-        c_str.reserve(args.size());
-        char *head = "{class_short_name}";
-        c_str.push_back(head);
-        for (auto &s : args)
-        {{
-            c_str.push_back(const_cast<char *>(s.c_str()));
-        }}
+        .def("{method_name}", 
+             []({class_short_name}& self, const std::vector<std::string>& args){{
+                std::vector<char *> c_str;
+                c_str.reserve(args.size());
+                char *head = "{class_short_name}";
+                c_str.push_back(head);
+                for (auto &s : args)
+                {{
+                    c_str.push_back(const_cast<char *>(s.c_str()));
+                }}
 
-        {return_adorn} {class_short_name}::init(c_str.size(), c_str.data());
-    }}
+                {return_adorn} self.init(c_str.size(), c_str.data());
+             }})
 """
 
 class_repr_method = """\

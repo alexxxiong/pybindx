@@ -74,6 +74,7 @@ class CppMethodWrapperWriter(base_writer.CppBaseWrapperWriter):
         arg_signature = ""
         num_arg_types = len(self.method_decl.argument_types)
         commandline_type = (num_arg_types == 2 and self.method_decl.arguments[0].decl_type.decl_string == 'int' and self.method_decl.arguments[1].decl_type.decl_string == 'char * *')
+
         if commandline_type:
             arg_signature = " std::vector<std::string> "
         else:
@@ -124,11 +125,15 @@ class CppMethodWrapperWriter(base_writer.CppBaseWrapperWriter):
         if self.method_decl.name in self.class_info.parent.function_mapping:
             method_name = self.class_info.parent.function_mapping[self.method_decl.name]
 
+        # return adorn
+        return_string = self.method_decl.return_type.decl_string
+
+        return_adorn = ""
+        if return_string is not "void":
+            return_adorn = "return"
+
         # class override name
         class_short_name = self.class_short_name
-        if commandline_type:
-            class_short_name += "_Overloads"
-
         method_dict = {'def_adorn': def_adorn,
                        'method_name_alias': method_name,
                        'method_name': self.method_decl.name,
@@ -139,9 +144,14 @@ class CppMethodWrapperWriter(base_writer.CppBaseWrapperWriter):
                        'class_short_name': class_short_name,
                        'method_docs': '" "',
                        'default_args': default_args,
-                       'call_policy': call_policy}
-        template = self.wrapper_templates["class_method"]
-        output_string += template.format(**method_dict)
+                       'call_policy': call_policy,
+                       'return_adorn': return_adorn}
+        if commandline_type:
+            template = self.wrapper_templates["class_method_argc_argv"]
+            output_string += template.format(**method_dict)
+        else:
+            template = self.wrapper_templates["class_method"]
+            output_string += template.format(**method_dict)
         return output_string
 
     def add_commandline_transform(self, output_string):

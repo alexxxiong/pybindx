@@ -104,32 +104,6 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
         if self.class_info.custom_generator is not None:
             self.cpp_string += self.class_info.custom_generator.get_class_cpp_pre_code(class_short_name)
 
-    def add_commandline_overrides(self, class_decl, short_class_name):
-        """
-        dealing with method like (int argc, char ** argv)
-        :param class_decl:
-        :param short_class_name:
-        :return:
-        """
-        cpp_string = ""
-        methods_needing_override = []
-        for eachMemberFunction in class_decl.member_functions(allow_empty=True):
-            if len(eachMemberFunction.arguments) == 2:
-                if eachMemberFunction.arguments[0].decl_type.decl_string == 'int' and eachMemberFunction.arguments[1].decl_type.decl_string == 'char * *':
-                    methods_needing_override.append(eachMemberFunction)
-
-        self.needs_override = self.needs_override or len(methods_needing_override) > 0
-        if len(methods_needing_override) > 0:
-            for eachMethod in methods_needing_override:
-                writer = method_writer.CppMethodWrapperWriter(self.class_info,
-                                                              eachMethod,
-                                                              class_decl,
-                                                              self.wrapper_templates,
-                                                              short_class_name)
-                cpp_string = writer.add_commandline_transform(cpp_string)
-
-        return cpp_string
-
     def add_virtual_overrides(self, class_decl, short_class_name):
 
         """
@@ -210,7 +184,6 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
             # Define any virtual function overloads
             overrides_string = ""
             override_cpp_string, cpp_typedef_string = self.add_virtual_overrides(class_decl, short_name)
-            commandline_cpp_string = self.add_commandline_overrides(class_decl, short_name)
             if self.needs_override:
                 over_ride_dict = {'class_short_name': short_name,
                                   'class_base_name': self.class_info.name}
@@ -218,7 +191,6 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
                 self.cpp_string += cpp_typedef_string
                 self.cpp_string += override_template.format(**over_ride_dict)
                 self.cpp_string += override_cpp_string
-                self.cpp_string += commandline_cpp_string
                 self.cpp_string += "\n};\n"
             # Add overrides if needed
                 overrides_string = ', ' + short_name + '_Overloads'
