@@ -1,4 +1,4 @@
-name: gquant
+name: Demo
 smart_ptr_type: std::shared_ptr
 template_substitutions:
   - signature: <unsigned DIM>
@@ -7,7 +7,7 @@ template_substitutions:
 modules:
 - name: analyser
   struct_repr: [writeToJsonString] # class or struct __repr__ with global free functions
-  namespace: [gQuant]
+  namespace: [Demo]
   source_locations:
   classes: ALL
 #    - name: StrategyAnalyzer
