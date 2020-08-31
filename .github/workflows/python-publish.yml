@@ -4,12 +4,19 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [created]
+  # 当master分支有push时，触发action
+  push: 
+    branches:
+      - master
+  
+  # 当一个pr被合并到master时，触发action
+  pull_request:
+    branches:
+      - master
 
 jobs:
   deploy:
-
+    name: publish python package to PYPI
     runs-on: ubuntu-latest
 
     steps:
