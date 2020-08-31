@@ -139,6 +139,7 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
         # Identify any methods needing over-rides, i.e. any that are virtual
         # here or in a parent.
         cpp_string = ""
+        cpp_typedef_string = ""
         methods_needing_override = []
         return_types = []
         for eachMemberFunction in class_decl.member_functions(allow_empty=True):
@@ -155,8 +156,8 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
                 typedef_string = "typedef {full_name} {tidy_name};\n"
                 typedef_dict = {'full_name': eachReturnString,
                                 'tidy_name': self.tidy_name(eachReturnString)}
-                cpp_string += typedef_string.format(**typedef_dict)
-        cpp_string += "\n"
+                cpp_typedef_string += typedef_string.format(**typedef_dict)
+        cpp_typedef_string += "\n"
 
         self.needs_override = self.needs_override or len(methods_needing_override) > 0
         if len(methods_needing_override) > 0:
@@ -168,10 +169,9 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
                                                               short_class_name)
                 cpp_string = writer.add_override(cpp_string)
 
-        return cpp_string
+        return cpp_string, cpp_typedef_string
 
     def write(self, work_dir):
-
         if len(self.class_decls) != len(self.class_full_names):
             message = 'Not enough class decls added to do write.'
             raise ValueError(message)
@@ -209,12 +209,13 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
 
             # Define any virtual function overloads
             overrides_string = ""
-            override_cpp_string = self.add_virtual_overrides(class_decl, short_name)
+            override_cpp_string, cpp_typedef_string = self.add_virtual_overrides(class_decl, short_name)
             commandline_cpp_string = self.add_commandline_overrides(class_decl, short_name)
             if self.needs_override:
                 over_ride_dict = {'class_short_name': short_name,
                                   'class_base_name': self.class_info.name}
                 override_template = self.wrapper_templates['class_virtual_override_header']
+                self.cpp_string += cpp_typedef_string
                 self.cpp_string += override_template.format(**over_ride_dict)
                 self.cpp_string += override_cpp_string
                 self.cpp_string += commandline_cpp_string
