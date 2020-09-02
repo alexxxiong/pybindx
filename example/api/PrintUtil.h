@@ -1,7 +1,31 @@
+//
+// Created by 熊居里 on 2020/8/29.
+//
+
 #pragma once
 
 #include "DemoApi.h"
-#include <sstream>
+#if defined _WIN32 || defined _WIN64
+#ifdef DEMO_DLL_EXPORTS
+#ifndef DEMO_DLL_API
+#define DEMO_DLL_API __declspec(dllexport)
+#endif
+#else
+#ifdef DEMO_USE_DLL
+#define DEMO_DLL_API __declspec(dllimport)
+#else
+#define DEMO_DLL_API
+#endif
+#endif
+
+#else
+
+#ifndef DEMO_DLL_API
+#define DEMO_DLL_API
+#endif
+
+#pragma GCC visibility push(default)
+#endif
 
 namespace Demo
 {
@@ -82,3 +106,9 @@ std::string writeToJsonString(const T *v, int size)
 }
 
 }
+
+
+#if defined _WIN32 || defined _WIN64
+#else
+#pragma GCC visibility pop
+#endif

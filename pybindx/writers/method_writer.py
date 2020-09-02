@@ -208,5 +208,6 @@ class CppMethodWrapperWriter(base_writer.CppBaseWrapperWriter):
                          'short_class_name': self.class_short_name,
                          'args_string': all_args_string,
                          }
+
         output_string += self.wrapper_templates["method_virtual_override"].format(**override_dict)
         return output_string

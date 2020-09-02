@@ -136,12 +136,16 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
         self.needs_override = self.needs_override or len(methods_needing_override) > 0
         if len(methods_needing_override) > 0:
             for eachMethod in methods_needing_override:
-                writer = method_writer.CppMethodWrapperWriter(self.class_info,
-                                                              eachMethod,
-                                                              class_decl,
-                                                              self.wrapper_templates,
-                                                              short_class_name)
-                cpp_string = writer.add_override(cpp_string)
+                num_arg_types = len(eachMethod.argument_types)
+                commandline_type = (num_arg_types == 2 and eachMethod.arguments[0].decl_type.decl_string == 'int' and eachMethod.arguments[1].decl_type.decl_string == 'char * *')
+
+                if not commandline_type:
+                    writer = method_writer.CppMethodWrapperWriter(self.class_info,
+                                                                  eachMethod,
+                                                                  class_decl,
+                                                                  self.wrapper_templates,
+                                                                  short_class_name)
+                    cpp_string = writer.add_override(cpp_string)
 
         return cpp_string, cpp_typedef_string
 
