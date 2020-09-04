@@ -4,6 +4,7 @@
 Parse the single header file using CastXML and pygccxml
 """
 
+import os
 from pygccxml import parser, declarations
 
 
@@ -42,7 +43,7 @@ class CppSourceParser:
 
         # Identify decls in our source tree
         def check_loc(loc):
-            return (self.source_root in loc) or ("wrapper_header_collection" in loc)
+            return os.path.realpath(self.source_root) in loc or (self.source_root in loc) or ("wrapper_header_collection" in loc)
 
         source_decls = [decl for decl in decls_loc_not_none if check_loc(decl.location.file_name)]
         self.source_ns = declarations.namespace_t("source", source_decls)

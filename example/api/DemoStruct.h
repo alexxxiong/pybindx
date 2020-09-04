@@ -7,6 +7,7 @@
 #include <set>
 #include <sstream>
 #include <algorithm>
+#include <memory>
 
 #if defined _WIN32 || defined _WIN64
 #ifdef ETA_DLL_EXPORTS
