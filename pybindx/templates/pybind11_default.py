@@ -17,6 +17,16 @@ void register_{class_short_name}_class(py::module &m);
 #endif // {class_short_name}_hpp__pyplusplus_wrapper
 """
 
+taf_proxy_call = """\
+m.def("create_proxy_for_{class_short_name}", [](const string &obj)
+{{
+    taf::TC_AutoPtr<{class_short_name}> prx = nullptr;
+    taf::Application::getCommunicator()->stringToProxy(obj, prx);
+
+    return prx.get();
+}});
+"""
+
 class_virtual_override_header = """\
 class {class_short_name}_Overloads : public {class_short_name}{{
     public:
@@ -101,6 +111,7 @@ template_collection = {'class_cpp_header': class_cpp_header,
                        'class_method': class_method,
                        'class_method_argc_argv': class_method_argc_argv,
                        'class_definition': class_definition,
+                       'taf_proxy_call': taf_proxy_call,
                        'class_virtual_override_header': class_virtual_override_header,
                        'class_virtual_override_footer': class_virtual_override_footer,
                        'smart_pointer_holder': smart_pointer_holder,

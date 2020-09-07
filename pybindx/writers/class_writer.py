@@ -149,6 +149,14 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
 
         return cpp_string, cpp_typedef_string
 
+    @staticmethod
+    def is_taf_rpc_call(class_decl):
+        if len(class_decl.bases) == 1:
+            if hasattr(class_decl.bases[0], "related_class"):
+                return class_decl.bases[0].related_class.name == 'ServantProxy'
+
+        return False
+
     def write(self, work_dir):
         if len(self.class_decls) != len(self.class_full_names):
             message = 'Not enough class decls added to do write.'
@@ -162,6 +170,9 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
 
             # Add the cpp file header
             self.add_cpp_header(class_decl.decl_string, short_name)
+
+            if self.is_taf_rpc_call(class_decl):
+                self.cpp_string += "\n#include \"servant/Application.h\"\n"
 
             # Check for struct-enum pattern
             if declarations.is_struct(class_decl):
@@ -284,7 +295,14 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
                 self.cpp_string += self.wrapper_templates['class_repr_method'].format(**method_dict)
 
             # Close the class definition
-            self.cpp_string += '    ;\n}\n'
+            self.cpp_string += '    ;\n'
+
+            # Add taf rpc call
+            if self.is_taf_rpc_call(class_decl):
+                rpc_call_dict = {'class_short_name': short_name}
+                self.cpp_string += self.wrapper_templates['taf_proxy_call'].format(**rpc_call_dict)
+
+            self.cpp_string += '\n}\n'
 
             # Set up the hpp
             self.add_hpp(short_name)
