@@ -1,37 +1,51 @@
-## Welcome to GitHub Pages
+# pybindx
+autogenerate for pybind11 with just head file
 
-You can use the [editor on GitHub](https://github.com/alexxxiong/pybindx/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+## required package
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+based on castxml and pygccxml, for parse C++
 
-### Markdown
+based on pybind11, for dealing with C++ Python Wrap
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## support
 
-```markdown
-Syntax highlighted code block
+1. support feature
+* common feature
 
-# Header 1
-## Header 2
-### Header 3
+  * import namespace
+  * module and sub module
+  * smart_ptr
+  * class public arg
+  * class public method, include virtual and pure virtual
+  * global function
+  * enum
 
-- Bulleted
-- List
+* class array arg like xxx[] get/set, include char[]
+    ```
+    .def_property("symbol", 
+                    [](EtaOverallPosition &self) { return self.symbol; }, 
+                    [](EtaOverallPosition &self, ::std::vector<char>& arg) { std::copy(arg.begin(), arg.end(), self.symbol); })
+    ```
 
-1. Numbered
-2. List
+    ```
+    .def_property("bids", 
+                    [](EtaQuote &self) { return self.bids; }, 
+                    [](EtaQuote &self, ::std::vector<::Demo::EtaQtyPrice>& arg) { std::copy(arg.begin(), arg.end(), self.bids); })
+    ```
 
-**Bold** and _Italic_ and `Code` text
+* class method like
+    ```
+    int test(int argc, char ** argv)
+    ```
+  will transform this args to list in python
 
-[Link](url) and ![Image](src)
-```
+* global class method transform to any other method name, like __repr__
+    ```
+    global_function_mapping:
+      - mapping: [ print, __repr__ ]
+    ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/alexxxiong/pybindx/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+* global free function for display c struct trans to __repr__
+    ```
+    struct_repr: [writeToJsonString]
+    ```
