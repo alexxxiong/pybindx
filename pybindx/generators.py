@@ -24,7 +24,8 @@ class CppWrapperGenerator(object):
                  castxml_binary='castxml',
                  package_info_path='package_info.yaml',
                  clang_binary='clang',
-                 cflags='--std=c++11 -w'
+                 cflags='--std=c++11 -w',
+                 source_header_files=None
                  ):
 
         logger = logging.getLogger()
@@ -38,6 +39,8 @@ class CppWrapperGenerator(object):
         self.cflags = cflags
         self.package_info_path = package_info_path
         self.source_hpp_files = []
+        if source_header_files is not None:
+            self.source_hpp_files = source_header_files
         self.global_ns = None
         self.source_ns = None
 
@@ -46,6 +49,10 @@ class CppWrapperGenerator(object):
 
         if self.source_includes is None:
             self.source_includes = [self.source_root]
+
+        # collect all location path used
+        self.source_dirs = {self.source_root}
+        self.package_info = PackageInfo("up_package", self.source_root)
 
         # If we suspect that a valid info file has not been supplied
         # fall back to the default behaviour
@@ -61,6 +68,11 @@ class CppWrapperGenerator(object):
         Walk through the source root and add any files matching the provided patterns.
         Keep the wrapper root out of the search path to avoid pollution.
         """
+        for pattern in self.package_info.source_hpp_patterns:
+            for filename in fnmatch.filter(self.source_hpp_files, pattern):
+                self.package_info.source_hpp_files.append(os.path.basename(filename))
+                self.source_dirs.add(os.path.abspath(os.path.dirname(filename)))
+
         for root, _, filenames in os.walk(self.source_root, followlinks=True):
             for pattern in self.package_info.source_hpp_patterns:
                 for filename in fnmatch.filter(filenames, pattern):
@@ -90,7 +102,7 @@ class CppWrapperGenerator(object):
         to population the global and source namespaces
         """
 
-        source_parser = CppSourceParser(self.source_root,
+        source_parser = CppSourceParser(self.source_dirs,
                                         header_collection_path,
                                         self.castxml_binary,
                                         self.source_includes,
@@ -189,7 +201,7 @@ class CppWrapperGenerator(object):
             info_parser.parse()
             self.package_info = info_parser.package_info
         else:
-            self.package_info = PackageInfo("up_package", self.source_root)
+            pass
 
         # Generate a header collection
         self.collect_source_hpp_files()

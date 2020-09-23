@@ -60,6 +60,17 @@ class_simple_args = """\
         .def{def_adorn}("{arg_name}", &{class_short_name}::{arg_name})
 """
 
+class_static_readonly_args = """\
+        .def{def_adorn}("{arg_name}", 
+                        [](py::object /* self */) {{ return {class_short_name}::{arg_name}; }})
+"""
+
+class_static_readwrite_args = """\
+        .def{def_adorn}("{arg_name}", 
+                        [](py::object /* self */) {{ return {class_short_name}::{arg_name}; }}, 
+                        [](py::object /* self */, const {arg_base_type}& arg) {{ {class_short_name}::{arg_name} = arg; }})
+"""
+
 class_char_array_args = """\
         .def{def_adorn}("{arg_name}", 
                         []({class_short_name} &self) {{ return self.{arg_name}; }}, 
@@ -107,6 +118,8 @@ template_collection = {'class_cpp_header': class_cpp_header,
                        'free_function': free_function,
                        'class_hpp_header': class_hpp_header,
                        'class_simple_args': class_simple_args,
+                       'class_static_readonly_args': class_static_readonly_args,
+                       'class_static_readwrite_args': class_static_readwrite_args,
                        'class_char_array_args': class_char_array_args,
                        'class_method': class_method,
                        'class_method_argc_argv': class_method_argc_argv,
@@ -118,5 +131,5 @@ template_collection = {'class_cpp_header': class_cpp_header,
                        'method_virtual_override': method_virtual_override,
                        'class_repr_method': class_repr_method,
                        'enum_define': enum_define,
-                       'enum_value_define': enum_value_define
+                       'enum_value_define': enum_value_define,
                        }

@@ -8,7 +8,7 @@ print(get_platform())
 
 setup(
     name='pybindx',  # 包名称
-    version='0.1.5',
+    version='0.1.6',
     keywords='autogenerate, pybind11',  # 关键词描述
     description='a simple auto generate for pybind11, could worked with only head file',   # 简略描述
     author='Alex Xiong',  # 作者信息

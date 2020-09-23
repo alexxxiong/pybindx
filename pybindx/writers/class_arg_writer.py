@@ -50,16 +50,26 @@ class CppClassArgWrapperWriter(base_writer.CppBaseWrapperWriter):
         base_has = hasattr(self.arg_decl.decl_type, "base")
         is_array = hasattr(self.arg_decl.decl_type, "size") and self.arg_decl.decl_type.size != 0
         char_array_type = base_has and self.arg_decl.decl_type.base.decl_string == 'char'
+        is_static = self.arg_decl.type_qualifiers.has_static
+        is_readonly = declarations.is_const(self.arg_decl.decl_type)
 
         arg_base_type = ""
         if is_array:
             def_adorn = "_property"
             arg_base_type = self.arg_decl.decl_type.base.decl_string
-        else:
-            def_adorn = "_readwrite"
-
-        if self.arg_decl.type_qualifiers.has_static:
+        elif is_static:
+            if is_readonly:
+                def_adorn = "_property_readonly"
+            else:
+                def_adorn = "_readwrite"
             def_adorn += "_static"
+            # if declarations.is_arithmetic(self.arg_decl.decl_type):
+            arg_base_type = self.arg_decl.decl_type.decl_string
+        else:
+            if is_readonly:
+                def_adorn = "_readonly"
+            else:
+                def_adorn = "_readwrite"
 
         simple_arg_dict = {'def_adorn': def_adorn,
                            'arg_name': self.arg_decl.name,
@@ -68,6 +78,8 @@ class CppClassArgWrapperWriter(base_writer.CppBaseWrapperWriter):
 
         if is_array:
             template = self.wrapper_templates["class_char_array_args"]
+        elif is_static and is_readonly:
+            template = self.wrapper_templates["class_static_readonly_args"]
         else:
             template = self.wrapper_templates["class_simple_args"]
         output_string += template.format(**simple_arg_dict)

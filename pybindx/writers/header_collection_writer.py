@@ -8,6 +8,7 @@ automatically wrapped.
 
 import os
 import ntpath
+import pybindx.templates.pybind11_default as wrapper_templates
 
 
 class CppHeaderCollectionWriter():
@@ -123,6 +124,9 @@ class CppHeaderCollectionWriter():
                     short_name = short_names[idx]
                     typdef_prefix = "typedef " + eachTemplateName.replace(" ","") + " "
                     self.hpp_string += typdef_prefix + short_name + ";\n"
+
+        if self.package_info.smart_ptr_type == "ref":
+            self.hpp_string += wrapper_templates.template_collection["ref"]
         self.hpp_string += "}\n"
 
         self.add_custom_header_code()
