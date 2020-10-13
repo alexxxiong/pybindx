@@ -2,6 +2,7 @@
 class_cpp_header = """\
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
 {includes}
 #include "{class_short_name}.pybindx.hpp"
 namespace py = pybind11;
@@ -84,6 +85,17 @@ class_method = """\
             {method_docs} {default_args} {call_policy})
 """
 
+class_method_with_ref = """\
+        .def{def_adorn}(
+            "{method_name_alias}",
+            [&]({class_short_name}& self{args})
+            {{
+                {ref_arg_defs}
+                {return_arg} self.{method_name_alias}({origin_args});
+                return {ref_args};
+            }})
+"""
+
 enum_define = """\
     py::enum_<{short_name}>(m, "{short_name}", py::arithmetic())
 {values_defines}
@@ -129,6 +141,7 @@ template_collection = {'class_cpp_header': class_cpp_header,
                        'class_virtual_override_footer': class_virtual_override_footer,
                        'smart_pointer_holder': smart_pointer_holder,
                        'method_virtual_override': method_virtual_override,
+                       'class_method_with_ref': class_method_with_ref,
                        'class_repr_method': class_repr_method,
                        'enum_define': enum_define,
                        'enum_value_define': enum_value_define,

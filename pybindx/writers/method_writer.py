@@ -90,23 +90,35 @@ class CppMethodWrapperWriter(base_writer.CppBaseWrapperWriter):
 
         # Default args
         default_args = ""
+        ref_arg_defs = ""
+        ref_args = []
+        args = ""
+        origin_args = []
         if commandline_type:
             default_args = ", py::arg(\"argc\")"
         else:
             if not self.default_arg_exclusion_criteria():
                 arg_types = self.method_decl.argument_types
+
                 for idx, eachArg in enumerate(self.method_decl.arguments):
                     default_args += ', py::arg("{}")'.format(eachArg.name)
-                    if eachArg.default_value is not None:
 
-                        # Hack for missing template in default args
-                        repl_value = str(eachArg.default_value)
-                        if "<DIM>" in repl_value:
-                            if "<2>" in str(arg_types[idx]).replace(" ", ""):
-                                repl_value = repl_value.replace("<DIM>", "<2>")
-                            elif "<3>" in str(arg_types[idx]).replace(" ", ""):
-                                repl_value = repl_value.replace("<DIM>", "<3>")
-                        default_args += ' = ' + repl_value
+                    if declarations.is_reference(eachArg.decl_type) and (not declarations.is_const(eachArg.decl_type.base)):
+                        ref_arg_defs += "{0} {1};\n                ".format(declarations.remove_reference(eachArg.decl_type), eachArg.name)
+                        ref_args.append(eachArg.name)
+                    else:
+                        if eachArg.default_value is not None:
+
+                            # Hack for missing template in default args
+                            repl_value = str(eachArg.default_value)
+                            if "<DIM>" in repl_value:
+                                if "<2>" in str(arg_types[idx]).replace(" ", ""):
+                                    repl_value = repl_value.replace("<DIM>", "<2>")
+                                elif "<3>" in str(arg_types[idx]).replace(" ", ""):
+                                    repl_value = repl_value.replace("<DIM>", "<3>")
+                            default_args += ' = ' + repl_value
+                        args += ", {0} {1}".format(eachArg.decl_type, eachArg.name)
+                    origin_args.append(eachArg.name)
 
         # Call policy
         pointer_call_policy = self.class_info.hierarchy_attribute('pointer_call_policy')
@@ -129,8 +141,11 @@ class CppMethodWrapperWriter(base_writer.CppBaseWrapperWriter):
         return_string = self.method_decl.return_type.decl_string
 
         return_adorn = ""
+        return_arg = ""
         if return_string is not "void":
             return_adorn = "return"
+            return_arg = "auto ret__ ="
+            ref_args.append("ret__")
 
         # class override name
         class_short_name = self.class_short_name
@@ -145,13 +160,23 @@ class CppMethodWrapperWriter(base_writer.CppBaseWrapperWriter):
                        'method_docs': '" "',
                        'default_args': default_args,
                        'call_policy': call_policy,
-                       'return_adorn': return_adorn}
+                       'args': args,
+                       'ref_arg_defs': ref_arg_defs,
+                       'return_arg': return_arg,
+                       'ref_args': ref_args[0] if len(ref_args) == 1 else "py::make_tuple({0})".format(', '.join(ref_args)),
+                       'origin_args': ', '.join(origin_args),
+                       'return_adorn': return_adorn
+                       }
         if commandline_type:
             template = self.wrapper_templates["class_method_argc_argv"]
             output_string += template.format(**method_dict)
         else:
-            template = self.wrapper_templates["class_method"]
-            output_string += template.format(**method_dict)
+            if ref_arg_defs != "":
+                template = self.wrapper_templates["class_method_with_ref"]
+                output_string += template.format(**method_dict)
+            else:
+                template = self.wrapper_templates["class_method"]
+                output_string += template.format(**method_dict)
         return output_string
 
     def add_commandline_transform(self, output_string):

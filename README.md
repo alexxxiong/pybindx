@@ -49,3 +49,8 @@ based on pybind11, for dealing with C++ Python Wrap
     ```
     struct_repr: [writeToJsonString]
     ```
+* class method with no-const-reference arguments
+    ```
+    int test(int arg1, vector<string> &arg2)    
+    ```
+    will return arg reference in return arguments
