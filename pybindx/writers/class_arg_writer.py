@@ -77,7 +77,10 @@ class CppClassArgWrapperWriter(base_writer.CppBaseWrapperWriter):
                            'class_short_name': self.class_short_name}
 
         if is_array:
-            template = self.wrapper_templates["class_char_array_args"]
+            if char_array_type:
+                template = self.wrapper_templates["class_char_array_args"]
+            else:
+                template = self.wrapper_templates["class_normal_array_args"]
         elif is_static and is_readonly:
             template = self.wrapper_templates["class_static_readonly_args"]
         else:

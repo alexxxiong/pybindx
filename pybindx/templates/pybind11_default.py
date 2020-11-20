@@ -75,6 +75,12 @@ class_static_readwrite_args = """\
 class_char_array_args = """\
         .def{def_adorn}("{arg_name}", 
                         []({class_short_name} &self) {{ return self.{arg_name}; }}, 
+                        []({class_short_name} &self, ::std::string& arg) {{ std::copy(arg.begin(), arg.end(), self.{arg_name}); }})
+"""
+
+class_normal_array_args = """\
+        .def{def_adorn}("{arg_name}", 
+                        []({class_short_name} &self) {{ return self.{arg_name}; }}, 
                         []({class_short_name} &self, ::std::vector<{arg_base_type}>& arg) {{ std::copy(arg.begin(), arg.end(), self.{arg_name}); }})
 """
 
@@ -133,6 +139,7 @@ template_collection = {'class_cpp_header': class_cpp_header,
                        'class_static_readonly_args': class_static_readonly_args,
                        'class_static_readwrite_args': class_static_readwrite_args,
                        'class_char_array_args': class_char_array_args,
+                       'class_normal_array_args': class_normal_array_args,
                        'class_method': class_method,
                        'class_method_argc_argv': class_method_argc_argv,
                        'class_definition': class_definition,
