@@ -5,9 +5,31 @@ This script generates the wrapper code
 """
 
 import os
+import platform
+import sys
+import subprocess
+import pkg_resources
 from argparse import ArgumentParser
-from glob import glob
+
+required = {'pybindx', 'pygccxml'}
+
+for req in required:
+    python = sys.executable
+    os.system(python + ' -m pip install --upgrade ' + req)
+
 from pybindx import CppWrapperGenerator
+
+
+def is_windows_system():
+    return 'Windows' in platform.system()
+
+
+def is_linux_system():
+    return 'Linux' in platform.system()
+
+
+def is_macos_system():
+    return 'Darwin' in platform.system()
 
 
 def generate_wrapper_code(source_root, source_header_files, wrapper_root, castxml_binary,
@@ -52,6 +74,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    if is_windows_system():
+        args.cflags = '-std=c++14 -w'
+    else:
+        if is_linux_system():
+            os.system('chmod +x ' + args.clang_binary)
+
+        os.system('chmod +x ' + args.castxml_binary)
+        args.cflags = '--std=c++11 -w'
+
     generate_wrapper_code(args.source_root, args.source_header_files, args.wrapper_root, args.castxml_binary, args.package_info,
                           args.includes, args.clang_binary, args.cflags)
-

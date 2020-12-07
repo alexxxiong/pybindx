@@ -100,6 +100,10 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
         for eachLine in self.class_info.prefix_code:
             self.cpp_string += eachLine + "\n"
 
+        # Namespace include
+        for ns in self.class_info.module_info.namespace:
+            self.cpp_string += 'using namespace ' + ns + ';\n'
+
         # Any custom generators
         if self.class_info.custom_generator is not None:
             self.cpp_string += self.class_info.custom_generator.get_class_cpp_pre_code(class_short_name)
