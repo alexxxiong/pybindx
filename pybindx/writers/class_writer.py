@@ -100,10 +100,6 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
         for eachLine in self.class_info.prefix_code:
             self.cpp_string += eachLine + "\n"
 
-        # Namespace include
-        for ns in self.class_info.module_info.namespace:
-            self.cpp_string += 'using namespace ' + ns + ';\n'
-
         # Any custom generators
         if self.class_info.custom_generator is not None:
             self.cpp_string += self.class_info.custom_generator.get_class_cpp_pre_code(class_short_name)
@@ -160,6 +156,16 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
                 return class_decl.bases[0].related_class.name == 'ServantProxy'
 
         return False
+
+    @staticmethod
+    def get_full_method_name(func_decl):
+        full_name = func_decl.name
+        parent = func_decl.parent
+        while parent.name != "::":
+            full_name = parent.name + "::" + full_name
+            parent = parent.parent
+
+        return "::" + full_name
 
     def write(self, work_dir):
         if len(self.class_decls) != len(self.class_full_names):
@@ -291,7 +297,7 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
             # Add repr function if needed
             if self.class_info.decl.decl_string in self.class_info.module_info.repr_mapping:
                 function = self.class_info.module_info.repr_mapping[self.class_info.decl.decl_string]
-                method_name = function.decl.name
+                method_name = self.get_full_method_name(function.decl)
                 method_dict = {'method_name': method_name,
                                'class_short_name': short_name
                                }

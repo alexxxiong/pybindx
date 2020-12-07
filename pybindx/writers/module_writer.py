@@ -66,7 +66,7 @@ class CppModuleWrapperWriter(object):
 
         # Add free functions
         for eachFunction in self.module_info.free_function_info:
-            if eachFunction.name in self.module_info.struct_repr:
+            if self.module_info.struct_repr is not None and eachFunction.name in self.module_info.struct_repr:
                 # Print function jump off
                 if len(eachFunction.decl.argument_types) == 1:
                     self.module_info.repr_mapping[eachFunction.decl.argument_types[0].base.base.decl_string] = eachFunction
