@@ -80,7 +80,7 @@ class_char_array_args = """\
 
 class_normal_array_args = """\
         .def{def_adorn}("{arg_name}", 
-                        []({class_short_name} &self) {{ return self.{arg_name}; }}, 
+                        []({class_short_name} &self) {{ py::list l; for (auto &item : self.{arg_name}) {{l.append(py::cast(item, py::return_value_policy::reference));}} return l;}}, 
                         []({class_short_name} &self, ::std::vector<{arg_base_type}>& arg) {{ std::copy(arg.begin(), arg.end(), self.{arg_name}); }})
 """
 
