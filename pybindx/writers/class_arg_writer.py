@@ -49,7 +49,7 @@ class CppClassArgWrapperWriter(base_writer.CppBaseWrapperWriter):
         # arg like char[24]
         base_has = hasattr(self.arg_decl.decl_type, "base")
         is_array = hasattr(self.arg_decl.decl_type, "size") and self.arg_decl.decl_type.size != 0
-        is_vector = True if '::std::vector' in self.arg_decl.decl_type.decl_string else False
+        # is_vector = True if '::std::vector' in self.arg_decl.decl_type.decl_string else False
 
         char_array_type = base_has and self.arg_decl.decl_type.base.decl_string == 'char'
         is_static = self.arg_decl.type_qualifiers.has_static
@@ -60,9 +60,9 @@ class CppClassArgWrapperWriter(base_writer.CppBaseWrapperWriter):
             def_adorn = "_property"
             if base_has:
                 arg_base_type = self.arg_decl.decl_type.base.decl_string
-        elif is_vector:
-            def_adorn = "_property"
-            arg_base_type = declarations.vector_traits.element_type(self.arg_decl.decl_type).decl_string
+        # elif is_vector:
+        #     def_adorn = "_property"
+        #     arg_base_type = declarations.vector_traits.element_type(self.arg_decl.decl_type).decl_string
         elif is_static:
             if is_readonly:
                 def_adorn = "_property_readonly"
@@ -87,8 +87,8 @@ class CppClassArgWrapperWriter(base_writer.CppBaseWrapperWriter):
                 template = self.wrapper_templates["class_char_array_args"]
             else:
                 template = self.wrapper_templates["class_normal_array_args"]
-        elif is_vector:
-            template = self.wrapper_templates["class_normal_array_args"]
+        # elif is_vector:
+        #     template = self.wrapper_templates["class_normal_array_args"]
         elif is_static and is_readonly:
             template = self.wrapper_templates["class_static_readonly_args"]
         else:
