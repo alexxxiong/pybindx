@@ -237,6 +237,7 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
 
             # Add the class registration
             class_definition_dict = {'short_name': short_name,
+                                     'short_alias': short_name if short_name not in self.class_info.module_info.class_alias else self.class_info.module_info.class_alias[short_name],
                                      'overrides_string': overrides_string,
                                      'ptr_support': ptr_support,
                                      'bases': bases}

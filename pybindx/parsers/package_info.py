@@ -87,6 +87,7 @@ class PackageInfoParser(object):
                                'variables': [],
                                'enums': [],
                                'global_function_mapping': None,
+                               'class_alias': None,
                                'struct_repr': None,
                                'use_all_enums': True,
                                'use_all_classes': False,
@@ -128,6 +129,14 @@ class PackageInfoParser(object):
                         self.check_for_custom_generators(class_info)
                         class_info_collection.append(class_info)
 
+            # Do class alias
+            class_alias = dict()
+            if module_defaults['class_alias'] is not None:
+                for eachMapping in module_defaults['class_alias']:
+                    if 'alias' in eachMapping:
+                        alias = eachMapping['alias']
+                        class_alias[alias[0]] = alias[1]
+
             # Do functions mapping
             function_mapping = dict()
             if module_defaults['global_function_mapping'] is not None:
@@ -165,6 +174,7 @@ class PackageInfoParser(object):
             module_info.free_function_info = function_info_collection
             module_info.variable_info = variable_collection
             module_info.function_mapping = function_mapping
+            module_info.class_alias = class_alias
             for class_info in module_info.class_info:
                 class_info.module_info = module_info
             for free_function_info in module_info.free_function_info:

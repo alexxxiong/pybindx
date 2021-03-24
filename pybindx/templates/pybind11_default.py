@@ -38,7 +38,7 @@ class_virtual_override_footer = "}\n"
 
 class_definition = """\
 void register_{short_name}_class(py::module &m){{
-py::class_<{short_name} {overrides_string} {ptr_support} {bases} >(m, "{short_name}")
+py::class_<{short_name} {overrides_string} {ptr_support} {bases} >(m, "{short_alias}")
 """
 
 method_virtual_override = """\
