@@ -6,11 +6,12 @@ template_substitutions:
 
 modules:
 - name: analyser
+  all_in_one: 1
   struct_repr: [writeToJsonString] # class or struct __repr__ with global free functions
   namespace: [Demo]
   source_locations:
   classes: ALL
-#    - name: StrategyAnalyzer
+#    - name: EtaBar
   variables: ALL
   free_functions: ALL
   enums: ALL

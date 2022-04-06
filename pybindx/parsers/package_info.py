@@ -80,6 +80,7 @@ class PackageInfoParser(object):
         # Parse module data
         for eachModule in self.raw_info['modules']:
             module_defaults = {'name': 'up_module',
+                               'all_in_one': 0,
                                'source_locations': None,
                                'namespace': [],
                                'classes': [],

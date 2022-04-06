@@ -9,6 +9,7 @@ import os
 from pybindx.writers import enum_writer
 from pybindx.writers import free_function_writer
 from pybindx.writers import class_writer
+from pybindx.writers import classes_writer
 
 
 class CppModuleWrapperWriter(object):
@@ -100,6 +101,15 @@ class CppModuleWrapperWriter(object):
         this_class_writer = class_writer.CppClassWrapperWriter(class_info, self.wrapper_templates)
         return this_class_writer
 
+    def get_classes_writer(self, class_info):
+
+        """
+        Return the class writer, override for custom writers
+        """
+
+        this_classes_writer = classes_writer.CppClassesWrapperWriter(class_info, self.wrapper_templates)
+        return this_classes_writer
+
     def write(self):
 
         """
@@ -114,13 +124,33 @@ class CppModuleWrapperWriter(object):
         for eachClassInfo in self.module_info.class_info:
             self.exposed_class_full_names.extend(eachClassInfo.get_full_names())
 
-        for eachClassInfo in self.module_info.class_info:
+        if self.module_info.all_in_one == 1:
+            path = self.wrapper_root + "/" + self.module_info.name + "/" + "Parser"
+            hpp_file = open(path + ".pybindx.hpp", "w")
+            hpp_file.write(self.wrapper_templates["classes_hpp_header"])
+            hpp_file.close()
 
-            print('Generating Wrapper Code for: ' + eachClassInfo.name + ' Class.')
+            cpp_file = open(path + ".pybindx.cpp", "w")
+            cpp_file.write(self.wrapper_templates["classes_cpp_header"])
+            cpp_file.close()
 
-            module_class_writer = self.get_class_writer(eachClassInfo)
-            module_class_writer.exposed_class_full_names = self.exposed_class_full_names
-            for fullName in eachClassInfo.get_full_names():
-                class_decl = self.source_ns.class_(fullName.replace(" ", ""))
-                module_class_writer.class_decls.append(class_decl)
-            module_class_writer.write(self.wrapper_root + "/" + self.module_info.name + "/")
+            for eachClassInfo in self.module_info.class_info:
+                print('Generating Wrapper Code for: ' + eachClassInfo.name + ' Class.')
+
+                module_classes_writer = self.get_classes_writer(eachClassInfo)
+                module_classes_writer.exposed_class_full_names = self.exposed_class_full_names
+                for fullName in eachClassInfo.get_full_names():
+                    class_decl = self.source_ns.class_(fullName.replace(" ", ""))
+                    module_classes_writer.class_decls.append(class_decl)
+                module_classes_writer.write(self.wrapper_root + "/" + self.module_info.name + "/")
+        else:
+            for eachClassInfo in self.module_info.class_info:
+
+                print('Generating Wrapper Code for: ' + eachClassInfo.name + ' Class.')
+
+                module_class_writer = self.get_class_writer(eachClassInfo)
+                module_class_writer.exposed_class_full_names = self.exposed_class_full_names
+                for fullName in eachClassInfo.get_full_names():
+                    class_decl = self.source_ns.class_(fullName.replace(" ", ""))
+                    module_class_writer.class_decls.append(class_decl)
+                module_class_writer.write(self.wrapper_root + "/" + self.module_info.name + "/")

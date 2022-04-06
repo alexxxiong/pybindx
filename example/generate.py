@@ -11,10 +11,14 @@ import subprocess
 import pkg_resources
 from argparse import ArgumentParser
 
-required = {'pybindx', 'pygccxml'}
+required = {'pybindx', 'pygccxml', 'pyyaml'}
 
 for req in required:
     python = sys.executable
+    if req == 'yaml':
+        os.system(python + ' -m pip install --upgrade pyyaml')
+        continue
+
     os.system(python + ' -m pip install --upgrade ' + req)
 
 from pybindx import CppWrapperGenerator

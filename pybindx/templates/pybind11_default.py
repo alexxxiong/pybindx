@@ -9,13 +9,38 @@ namespace py = pybind11;
 typedef {class_full_name} {class_short_name};{smart_ptr_handle}
 """
 
+classes_cpp_header = """\
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/functional.h>
+#include "Parser.pybindx.hpp"
+#include "wrapper_header_collection.h"
+namespace py = pybind11;
+
+"""
+
+classes_cpp_context = """\
+typedef {class_full_name} {class_short_name};{smart_ptr_handle}
+"""
+
 class_hpp_header = """\
-#ifndef {class_short_name}_hpp__pyplusplus_wrapper
-#define {class_short_name}_hpp__pyplusplus_wrapper
+#pragma once
 
 namespace py = pybind11;
 void register_{class_short_name}_class(py::module &m);
-#endif // {class_short_name}_hpp__pyplusplus_wrapper
+
+"""
+
+classes_hpp_header = """\
+#pragma once
+
+namespace py = pybind11;
+
+"""
+
+classes_hpp_context = """\
+void register_{class_short_name}_class(py::module &m);
+
 """
 
 taf_proxy_call = """\
@@ -132,9 +157,13 @@ class_repr_method = """\
 """
 
 
-template_collection = {'class_cpp_header': class_cpp_header,
-                       'free_function': free_function,
+template_collection = {'free_function': free_function,
+                       'class_cpp_header': class_cpp_header,
                        'class_hpp_header': class_hpp_header,
+                       'classes_cpp_header': classes_cpp_header,
+                       'classes_hpp_header': classes_hpp_header,
+                       'classes_cpp_context': classes_cpp_context,
+                       'classes_hpp_context': classes_hpp_context,
                        'class_simple_args': class_simple_args,
                        'class_static_readonly_args': class_static_readonly_args,
                        'class_static_readwrite_args': class_static_readwrite_args,
