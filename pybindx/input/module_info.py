@@ -20,6 +20,7 @@ class ModuleInfo(base_info.BaseInfo):
         self.class_ignored = []
         self.free_function_info = []
         self.variable_info = []
+        self.variable_ignored = []
         self.enum_info = []
         self.namespace = []
         self.struct_repr = []

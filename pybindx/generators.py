@@ -179,7 +179,7 @@ class CppWrapperGenerator(object):
                     if eachModule.is_decl_in_source_path(eachClass):
                         if eachClass.name in eachModule.class_ignored:
                             continue
-                        class_info = CppClassInfo(eachClass.name)
+                        class_info = CppClassInfo(eachClass.name, {'excluded_variables': self.package_info.excluded_variables})
                         class_info.module_info = eachModule
                         class_info.decl = eachClass
                         eachModule.class_info.append(class_info)

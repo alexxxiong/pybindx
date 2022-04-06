@@ -63,17 +63,9 @@ class CppClassesWrapperWriter(base_writer.CppBaseWrapperWriter):
 
         header = "wrapper_header_collection"
 
-        # Check for custom smart pointers
-        smart_ptr_handle = ""
-        smart_pointer_handle = self.class_info.hierarchy_attribute('smart_ptr_type')
-        if smart_pointer_handle is not None:
-            smart_ptr_template = self.wrapper_templates["smart_pointer_holder"]
-            smart_ptr_handle = "\n" + smart_ptr_template.format(smart_pointer_handle) + ";"
-
         header_dict = {'wrapper_header_collection': header,
                        'class_short_name': class_short_name,
                        'class_full_name': class_full_name,
-                       'smart_ptr_handle': smart_ptr_handle,
                        'includes': '#include "' + header + '.hpp"\n'}
         extra_include_string = ""
         common_include_file = self.class_info.hierarchy_attribute('common_include_file')

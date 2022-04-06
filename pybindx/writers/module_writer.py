@@ -134,7 +134,15 @@ class CppModuleWrapperWriter(object):
             hpp_file.close()
 
             cpp_file = open(path + ".pybindx.cpp", "w")
-            cpp_file.write(self.wrapper_templates["classes_cpp_header"])
+            # Check for custom smart pointers
+            smart_ptr_handle = ""
+            smart_pointer_handle = self.module_info.smart_ptr_type
+            if smart_pointer_handle is not None:
+                smart_ptr_template = self.wrapper_templates["smart_pointer_holder"]
+                smart_ptr_handle = "\n" + smart_ptr_template.format(smart_pointer_handle) + ";"
+
+            cpp_header_dict = {'smart_ptr_handle': smart_ptr_handle}
+            cpp_file.write(self.wrapper_templates["classes_cpp_header"].format(**cpp_header_dict))
             cpp_file.close()
 
             for eachClassInfo in self.module_info.class_info:

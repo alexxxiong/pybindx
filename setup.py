@@ -8,12 +8,13 @@ print(get_platform())
 
 setup(
     name='pybindx',  # 包名称
-    version='1.1.19',
+    version='1.1.20',
     keywords='autogenerate, pybind11',  # 关键词描述
     description='a simple auto generate for pybind11, could worked with only head file',   # 简略描述
     author='Alex Xiong',  # 作者信息
     packages=find_packages(),
     install_requires=[
         "pygccxml",
+        "pyyaml"
     ]
 )

@@ -14,13 +14,13 @@ classes_cpp_header = """\
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
 #include "Parser.pybindx.hpp"
-#include "wrapper_header_collection.h"
+#include "wrapper_header_collection.hpp"
 namespace py = pybind11;
-
+{smart_ptr_handle}
 """
 
 classes_cpp_context = """\
-typedef {class_full_name} {class_short_name};{smart_ptr_handle}
+typedef {class_full_name} {class_short_name};
 """
 
 class_hpp_header = """\

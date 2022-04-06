@@ -131,7 +131,7 @@ class PackageInfoParser(object):
                         self.check_for_custom_generators(class_info)
                         class_info_collection.append(class_info)
 
-            # Do class alias
+            # Do class ignored
             class_ignored_collection = []
             if 'class_ignored' in module_defaults:
                 if module_defaults['class_ignored'] is not None:
@@ -176,12 +176,19 @@ class PackageInfoParser(object):
                     variable_info = CppFreeFunctionInfo(variable_defaults['name'], variable_defaults)
                     variable_collection.append(variable_info)
 
+            # Do class ignored
+            variable_ignored_collection = []
+            if 'variable_ignored' in module_defaults:
+                if module_defaults['variable_ignored'] is not None:
+                    variable_ignored_collection = module_defaults['variable_ignored']
+
             module_info = ModuleInfo(module_defaults['name'], module_defaults)
             module_info.enum_info = enum_info_collection
             module_info.class_info = class_info_collection
             module_info.class_ignored = class_ignored_collection
             module_info.free_function_info = function_info_collection
             module_info.variable_info = variable_collection
+            module_info.variable_ignored = variable_ignored_collection
             module_info.function_mapping = function_mapping
             module_info.class_alias = class_alias
             for class_info in module_info.class_info:
