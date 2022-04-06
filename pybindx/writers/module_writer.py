@@ -52,9 +52,12 @@ class CppModuleWrapperWriter(object):
             cpp_string += self.module_info.custom_generator.get_module_pre_code()
 
         # Add includes
-        for eachClass in self.module_info.class_info:
-            for short_name in eachClass.get_short_names():
-                cpp_string += '#include "' + short_name + '.pybindx.hpp"\n'
+        if self.module_info.all_in_one == 1:
+            cpp_string += '#include "Parser.pybindx.hpp"\n'
+        else:
+            for eachClass in self.module_info.class_info:
+                for short_name in eachClass.get_short_names():
+                    cpp_string += '#include "' + short_name + '.pybindx.hpp"\n'
         cpp_string += '\nnamespace py = pybind11;\n\n'
         for ns in self.module_info.namespace:
             cpp_string += 'using namespace ' + ns + ';\n'
