@@ -89,6 +89,7 @@ class PackageInfoParser(object):
                                'enums': [],
                                'global_function_mapping': None,
                                'class_alias': None,
+                               'class_ignored': None,
                                'struct_repr': None,
                                'use_all_enums': True,
                                'use_all_classes': False,
@@ -129,6 +130,12 @@ class PackageInfoParser(object):
                         class_info = CppClassInfo(eachClass['name'], class_defaults)
                         self.check_for_custom_generators(class_info)
                         class_info_collection.append(class_info)
+
+            # Do class alias
+            class_ignored_collection = []
+            if 'class_ignored' in module_defaults:
+                if module_defaults['class_ignored'] is not None:
+                    class_ignored_collection = module_defaults['class_ignored']
 
             # Do class alias
             class_alias = dict()
@@ -172,6 +179,7 @@ class PackageInfoParser(object):
             module_info = ModuleInfo(module_defaults['name'], module_defaults)
             module_info.enum_info = enum_info_collection
             module_info.class_info = class_info_collection
+            module_info.class_ignored = class_ignored_collection
             module_info.free_function_info = function_info_collection
             module_info.variable_info = variable_collection
             module_info.function_mapping = function_mapping

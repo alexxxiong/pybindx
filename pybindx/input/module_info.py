@@ -17,6 +17,7 @@ class ModuleInfo(base_info.BaseInfo):
         self.package_info = None
         self.source_locations = None
         self.class_info = []
+        self.class_ignored = []
         self.free_function_info = []
         self.variable_info = []
         self.enum_info = []

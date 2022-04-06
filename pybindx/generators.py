@@ -177,12 +177,16 @@ class CppWrapperGenerator(object):
                 classes = self.source_ns.classes(allow_empty=True)
                 for eachClass in classes:
                     if eachModule.is_decl_in_source_path(eachClass):
+                        if eachClass.name in eachModule.class_ignored:
+                            continue
                         class_info = CppClassInfo(eachClass.name)
                         class_info.module_info = eachModule
                         class_info.decl = eachClass
                         eachModule.class_info.append(class_info)
             else:
                 for eachClass in eachModule.class_info:
+                    if eachClass.name in eachModule.class_ignored:
+                        continue
                     classes = self.source_ns.classes(eachClass.name,
                                                      allow_empty=True)
                     if len(classes) == 1:
