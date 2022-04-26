@@ -11,6 +11,7 @@ from pybindx.writers import free_function_writer
 from pybindx.writers import class_writer
 from pybindx.writers import classes_writer
 
+from pygccxml import declarations
 
 class CppModuleWrapperWriter(object):
 
@@ -147,6 +148,10 @@ class CppModuleWrapperWriter(object):
 
             for eachClassInfo in self.module_info.class_info:
                 print('Generating Wrapper Code for: ' + eachClassInfo.name + ' Class.')
+                if declarations.templates.is_instantiation(eachClassInfo.name):
+                    name_split = declarations.templates.split(eachClassInfo.name)
+                    if name_split[0] in self.module_info.class_ignored:
+                        continue
 
                 module_classes_writer = self.get_classes_writer(eachClassInfo)
                 module_classes_writer.exposed_class_full_names = self.exposed_class_full_names

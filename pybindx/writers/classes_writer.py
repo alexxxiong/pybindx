@@ -221,6 +221,11 @@ class CppClassesWrapperWriter(base_writer.CppBaseWrapperWriter):
             bases = ""
             for eachBase in class_decl.bases:
                 cleaned_base = eachBase.related_class.name.replace(" ", "")
+                if declarations.templates.is_instantiation(cleaned_base):
+                    name_split = declarations.templates.split(cleaned_base)
+                    if name_split[0] in self.class_info.module_info.class_ignored:
+                        continue
+
                 exposed = any(cleaned_base in t.replace(" ", "") for t in self.exposed_class_full_names)
                 public = not eachBase.access_type == "private"
                 if exposed and public:
