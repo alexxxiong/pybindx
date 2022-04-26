@@ -184,6 +184,9 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
             if self.is_taf_rpc_call(class_decl):
                 self.cpp_string += "\n#include \"servant/Application.h\"\n"
 
+            for inc in self.class_info.package_info.include_only_head_files:
+                self.cpp_string += '#include "' + inc + '"\n'
+
             # Check for struct-enum pattern
             if declarations.is_struct(class_decl):
                 enums = class_decl.enumerations(allow_empty=True)
@@ -228,8 +231,16 @@ class CppClassWrapperWriter(base_writer.CppBaseWrapperWriter):
 
             # Add base classes if needed
             bases = ""
+            custom_def = dict()
             for eachBase in class_decl.bases:
                 cleaned_base = eachBase.related_class.name.replace(" ", "")
+                if declarations.templates.is_instantiation(cleaned_base):
+                    name_split = declarations.templates.split(cleaned_base)
+                    if name_split[0] in self.class_info.module_info.template_function_mapping:
+                        custom_def.update(self.class_info.module_info.template_function_mapping[name_split[0]])
+
+                    if name_split[0] in self.class_info.module_info.class_ignored:
+                        continue
                 exposed = any(cleaned_base in t.replace(" ", "") for t in self.exposed_class_full_names)
                 public = not eachBase.access_type == "private"
                 if exposed and public:

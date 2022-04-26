@@ -1,17 +1,30 @@
-name: Demo
+name: ks
 smart_ptr_type: std::shared_ptr
+excluded_variables: [m_ptrImpl]
 template_substitutions:
   - signature: <unsigned DIM>
-    replacement: [[2], [3]]   
+    replacement: [[2], [3]]
+
+# 包含但是不解析
+include_only_head_files: [ks_print_api.h]
 
 modules:
-- name: analyser
+- name: quant
   all_in_one: 1
-  struct_repr: [writeToJsonString] # class or struct __repr__ with global free functions
-  namespace: [Demo]
+  struct_repr: [print]
+  global_function_mapping:
+    - mapping: [ print, __repr__ ]
+  template_function_mapping:
+    - Base:
+      - __repr__: "[](const {} &arg) {{ return ::kingstar::scorpio::print(arg);}}"
+  namespace: [kingstar::scorpio::quant, kingstar::scorpio]
   source_locations:
+
   classes: ALL
-#    - name: EtaBar
+#    - name: StrategyAnalyzer
   variables: ALL
   free_functions: ALL
   enums: ALL
+  class_ignored: [Impl, Base]
+  variable_ignored: [m_ptrImpl]
+

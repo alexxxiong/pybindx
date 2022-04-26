@@ -70,14 +70,21 @@ class CppWrapperGenerator(object):
         """
         for pattern in self.package_info.source_hpp_patterns:
             for filename in fnmatch.filter(self.source_hpp_files, pattern):
+                if os.path.basename(filename) in self.package_info.include_only_head_files:
+                    continue
+
+                print(os.path.basename(filename))
                 self.package_info.source_hpp_files.append(os.path.basename(filename))
                 self.source_dirs.add(os.path.abspath(os.path.dirname(filename)))
 
         for root, _, filenames in os.walk(self.source_root, followlinks=True):
             for pattern in self.package_info.source_hpp_patterns:
                 for filename in fnmatch.filter(filenames, pattern):
-                    if "pybindx" not in filename:
-                        self.package_info.source_hpp_files.append(os.path.join(root, filename))
+                    if "pybindx" in filename or os.path.basename(filename) in self.package_info.include_only_head_files:
+                        continue
+
+                    print(os.path.basename(filename))
+                    self.package_info.source_hpp_files.append(os.path.join(root, filename))
         self.package_info.source_hpp_files = [path for path in self.package_info.source_hpp_files
                                               if self.wrapper_root not in path]
 

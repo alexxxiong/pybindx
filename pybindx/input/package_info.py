@@ -22,7 +22,8 @@ class PackageInfo(base_info.BaseInfo):
         self.source_hpp_patterns = ["*.hpp"]
         self.source_hpp_files = []
         self.common_include_file = False
-        
+        self.include_only_head_files = []
+
         if type_info_dict is not None:
             for key in type_info_dict:
                 setattr(self, key, type_info_dict[key])  

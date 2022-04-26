@@ -82,6 +82,10 @@ class CppModuleWrapperWriter(object):
 
         # Add viable classes
         for eachClass in self.module_info.class_info:
+            if declarations.templates.is_instantiation(eachClass.name):
+                name_split = declarations.templates.split(eachClass.name)
+                if name_split[0] in self.module_info.class_ignored:
+                    continue
             for short_name in eachClass.get_short_names():
                 cpp_string += '    register_' + short_name + '_class(m);\n'
 
@@ -144,14 +148,19 @@ class CppModuleWrapperWriter(object):
 
             cpp_header_dict = {'smart_ptr_handle': smart_ptr_handle}
             cpp_file.write(self.wrapper_templates["classes_cpp_header"].format(**cpp_header_dict))
+
+            for inc in self.module_info.package_info.include_only_head_files:
+                cpp_file.write('#include "' + inc + '"\n')
+
             cpp_file.close()
 
             for eachClassInfo in self.module_info.class_info:
-                print('Generating Wrapper Code for: ' + eachClassInfo.name + ' Class.')
                 if declarations.templates.is_instantiation(eachClassInfo.name):
                     name_split = declarations.templates.split(eachClassInfo.name)
                     if name_split[0] in self.module_info.class_ignored:
                         continue
+
+                print('Generating Wrapper Code for: ' + eachClassInfo.name + ' Class.')
 
                 module_classes_writer = self.get_classes_writer(eachClassInfo)
                 module_classes_writer.exposed_class_full_names = self.exposed_class_full_names
@@ -161,6 +170,10 @@ class CppModuleWrapperWriter(object):
                 module_classes_writer.write(self.wrapper_root + "/" + self.module_info.name + "/")
         else:
             for eachClassInfo in self.module_info.class_info:
+                if declarations.templates.is_instantiation(eachClassInfo.name):
+                    name_split = declarations.templates.split(eachClassInfo.name)
+                    if name_split[0] in self.module_info.class_ignored:
+                        continue
 
                 print('Generating Wrapper Code for: ' + eachClassInfo.name + ' Class.')
 

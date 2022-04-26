@@ -62,6 +62,7 @@ class PackageInfoParser(object):
                            'excluded_methods': [],
                            'excluded_variables': [],
                            'custom_generator': None,
+                           'include_only_head_files': [],
                            'prefix_code': []}
 
         # Parse package data
@@ -88,6 +89,7 @@ class PackageInfoParser(object):
                                'variables': [],
                                'enums': [],
                                'global_function_mapping': None,
+                               'template_function_mapping': None,
                                'class_alias': None,
                                'class_ignored': None,
                                'struct_repr': None,
@@ -153,6 +155,15 @@ class PackageInfoParser(object):
                         mapping = eachMapping['mapping']
                         function_mapping[mapping[0]] = mapping[1]
 
+            template_function_mapping = dict()
+            if module_defaults['template_function_mapping'] is not None:
+                for eachMapping in module_defaults['template_function_mapping']:
+                    for m in eachMapping:
+                        template_function_mapping[m] = dict()
+                        for item in eachMapping[m]:
+                            for name in item:
+                                template_function_mapping[m][name] = item[name]
+
             # Do functions
             function_info_collection = []
             module_defaults['use_all_free_functions'] = self.is_option_ALL('free_functions',
@@ -190,6 +201,7 @@ class PackageInfoParser(object):
             module_info.variable_info = variable_collection
             module_info.variable_ignored = variable_ignored_collection
             module_info.function_mapping = function_mapping
+            module_info.template_function_mapping = template_function_mapping
             module_info.class_alias = class_alias
             for class_info in module_info.class_info:
                 class_info.module_info = module_info

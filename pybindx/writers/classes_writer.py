@@ -219,10 +219,15 @@ class CppClassesWrapperWriter(base_writer.CppBaseWrapperWriter):
 
             # Add base classes if needed
             bases = ""
+
+            custom_def = dict()
             for eachBase in class_decl.bases:
                 cleaned_base = eachBase.related_class.name.replace(" ", "")
                 if declarations.templates.is_instantiation(cleaned_base):
                     name_split = declarations.templates.split(cleaned_base)
+                    if name_split[0] in self.class_info.module_info.template_function_mapping:
+                        custom_def.update(self.class_info.module_info.template_function_mapping[name_split[0]])
+
                     if name_split[0] in self.class_info.module_info.class_ignored:
                         continue
 
@@ -286,6 +291,9 @@ class CppClassesWrapperWriter(base_writer.CppBaseWrapperWriter):
                                                                   self.wrapper_templates,
                                                                   short_name)
                     self.cpp_string = writer.add_self(self.cpp_string)
+
+            for eachMemberFunction in custom_def:
+                self.cpp_string += "        .def(\"" + eachMemberFunction + "\", " + custom_def[eachMemberFunction].format(short_name) + ")\n"
 
             # Any custom generators
             if self.class_info.custom_generator is not None:

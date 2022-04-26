@@ -51,6 +51,7 @@ class CppHeaderCollectionWriter():
         if not os.path.exists(self.wrapper_root + "/"):
             os.makedirs(self.wrapper_root + "/")
         file_path = self.wrapper_root + "/" + self.header_file_name
+
         hpp_file = open(file_path, 'w')
         hpp_file.write(self.hpp_string)
         hpp_file.close()

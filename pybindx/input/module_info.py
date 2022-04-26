@@ -28,6 +28,8 @@ class ModuleInfo(base_info.BaseInfo):
         self.use_all_classes = False
         self.use_all_free_functions = False
         self.use_all_enums = False
+        self.template_function_mapping = {}
+        self.function_mapping = {}
 
         if type_info_dict is not None:
             for key in type_info_dict:
